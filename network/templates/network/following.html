@@ -1,0 +1,47 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+    <script type="application/json" id="likedByWhomData">
+        {{ likedByWhom | default:"{}" | safe }}
+    </script>
+
+<h1 class='mx-4'>Following Posts</h1>
+    <div class="all-posts">
+        {% for post in posts_of_the_page %}
+            <div class='row post'>
+                <h5 class='username'><a href="{% url "profile" user_id=post.user.id %}">"@{{post.user}}"</a></h5>
+                <h6 class='content'>{{post.content}}</h6>
+                <p class='date'>{{post.date}}</p>
+
+                
+                {% if user.is_authenticated %}
+                
+                    {% if post.id in who_liked_you %}
+                        <!-- this means that we already liked post-->
+                        <button class='btn btn-info fa fa-thumbs-down col-1' aria-pressed="false" onclick="like('{{ post.id }}', '{{ who_liked_you}}')" id="{{ post.id }}"><span class="like-count" id="like-count-{{ post.id }}"></span></button>
+                    {% else %}  
+                        <button class='btn btn-info fa fa-thumbs-up col-1' aria-pressed="true" onclick="like('{{ post.id }}', '{{who_liked_you}}')" id="{{ post.id }}"><span class="like-count" id="like-count-{{ post.id }}"></span></button>
+                    {% endif %}
+
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end  mx-4">
+            {% if posts_of_the_page.has_previous %}
+                <li class="page-item ">
+                    <a class="page-link bg-dark" href="?page={{posts_of_the_page.previous_page_number}}">Previous</a>
+                </li>
+            {% endif %}
+            {% if posts_of_the_page.has_next %}
+                <li class="page-item">
+                    <a class="page-link text-color-gry bg-dark" href="?page={{posts_of_the_page.next_page_number}}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+{% endblock %}
